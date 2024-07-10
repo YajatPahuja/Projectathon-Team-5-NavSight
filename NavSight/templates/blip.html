@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Captioning</title>
+</head>
+<body>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        // Access the user's camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    setTimeout(captureImage, 1000); // Capture the image after 1 second
+                };
+            })
+            .catch(error => console.error('Error accessing media devices.', error));
+
+        function captureImage() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            console.log("Captured Image Data:", imageData); // Log the captured image data
+            sendImageToBackend(imageData);
+        }
+
+        function sendImageToBackend(imageData) {
+            fetch('/blip/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('Error from server:', data.error);
+                    return;
+                }
+                const caption = data.caption;
+                console.log("Caption from server:", caption); // Log the caption received
+                textToSpeech(caption);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function textToSpeech(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            console.log(text);
+            speechSynthesis.speak(utterance);
+        }
+    });
+  
+    </script>
+</body>
+</html>

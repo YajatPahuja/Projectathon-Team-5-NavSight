@@ -1,0 +1,9 @@
+django
+cv2
+ultralytics
+transformers
+numpy
+PIL
+json
+io
+base64
