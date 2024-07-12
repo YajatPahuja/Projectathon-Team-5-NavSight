@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NavSight</title>
+    <link rel="stylesheet" href="{% static 'admin/css/two.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="logo-section">
+                <h1 class="logo">NavSight <span class="icon">👁️</span></h1>
+                <p class="tagline">Your unique ID is:</p>
+                <div class="unique-id">{{ uniqueid }}</div>
+                <!-- Adding elements to display latitude and longitude -->
+                <div id="latitude"></div>
+                <div id="longitude"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript code -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    // Function to get the CSRF token from the cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        var locationData = {
+            latitude: latitude,
+            longitude: longitude
+        };
+        var locationJSON = JSON.stringify(locationData);
+        alert("Latitude: " + latitude + "\nLongitude: " + longitude);
+
+        sendData(locationData);
+    }
+
+    const sendData = async (data) => {
+        const url = 'uniqueid1';  // Replace with your actual endpoint URL  
+        const csrfToken = getCookie('csrftoken');
+
+        try {
+            const response = await axios.post(url, data, {
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('Data sent successfully:', response.data);
+            // Handle response as needed
+        } catch (error) {
+            console.error('Error sending data:', error);
+            // Handle error
+        }
+    };
+
+    // Call the function to get the location
+    getLocation();
+</script>
+
+</body>
+</html>

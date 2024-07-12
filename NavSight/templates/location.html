@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NavSight</title>
+    <link rel="stylesheet" href="{% static 'admin/css/eight.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>NavSight<span class="logo-icon">👁️</span></h1>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="{% url 'navigatorhome' %}" class="nav-link">
+                        <span class="icon">🏠</span>
+                        <span class="text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'location' %}" class="nav-link">
+                        <span class="icon">📍</span>
+                        <span class="text">Location</span>
+                    </a>
+                </li>
+            </ul>
+            <button class="logout-btn">Log Out</button>
+        </nav>
+        <main class="main-content">
+            <h1>Live Location</h1>
+            <div id="map" style="height: 600px; width: 800px;"></div>
+            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+            <script>
+                setTimeout(function() {
+                    location.reload();
+                }, 300000);
+                var latitude = {{ unique_id_data.latitude|default:0 }};
+                var longitude = {{ unique_id_data.longitude|default:0 }};
+                var map = L.map('map').setView([latitude, longitude], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                L.marker([latitude, longitude]).addTo(map)
+                    .bindPopup('Location: ' + latitude + ', ' + longitude)
+                    .openPopup();
+            </script>
+        </main>
+    </div>
+</body>
+</html>
