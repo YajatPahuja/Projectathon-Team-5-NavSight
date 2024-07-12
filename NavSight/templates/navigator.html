@@ -16,6 +16,11 @@
                 <li><span class="icon">📍</span><a href={% url "location" %}>Location</a></li>
             </ul>
             <button class="logout-btn">Log Out</button>
+            <script>
+                document.querySelector('.logout-btn').addEventListener('click', function() {
+                    window.location.href = '/';  // Redirect to the home page
+                });
+            </script>
         </div>
         <div class="main-content">
             <div class="welcome-section">

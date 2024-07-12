@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YOLO Object Detection</title>
+    <link rel="stylesheet" href="{% static 'admin/css/ten.css' %}">
 </head>
 <body>
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
+    <div class="container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas" style="display: none;"></canvas>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('video');
